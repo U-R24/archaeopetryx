@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eef5f7">
+<title>JURASSIA — Archaeopteryx 3D</title>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{overflow:hidden;background:#eef5f7;font-family:system-ui,sans-serif}
+model-viewer{width:100%;height:100%;background:#eef5f7;--poster-color:#eef5f7;touch-action:pan-y}
+.hint{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.92);color:#29445a;font:500 13px/1.2 system-ui,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.08);pointer-events:none;white-space:nowrap}
+</style>
+</head>
+<body>
+<model-viewer src="./ark_archaeopteryx.glb" alt="Model 3D Archaeopteryx"
+ camera-controls auto-rotate auto-rotate-delay="1000"
+ rotation-per-second="18deg" interaction-prompt="none"
+ shadow-intensity="1" exposure="1" environment-image="neutral"
+ loading="eager">
+</model-viewer>
+<div class="hint">Geser untuk memutar · Cubit untuk zoom</div>
+</body>
+</html>
