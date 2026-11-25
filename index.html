@@ -165,7 +165,17 @@ viewer.addEventListener("load", () => {
   loading.classList.add("hide");
   setTimeout(() => loading.remove(), 600);
 });
-</script>
 
+viewer.addEventListener("error", () => {
+  loading.innerHTML = `
+    <p style="color:#c44; font-size:14px;">
+      Gagal memuat model 3D :(
+    </p>
+    <p style="color:#888; font-size:11px;">
+      Periksa file archaeopteryx.glb
+    </p>
+  `;
+});
+</script>
 </body>
 </html>
