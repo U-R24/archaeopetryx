@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,13 +11,15 @@ src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.j
 </script>
 
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 html, body {
   width: 100%;
   height: 100%;
   margin: 0;
-  background: #fff;
+  background: white;
   font-family: Arial, sans-serif;
   overflow: hidden;
 }
@@ -25,7 +28,7 @@ model-viewer {
   width: 100%;
   height: 100%;
   display: block;
-  background: #fff;
+  background: white;
 }
 
 #loading {
@@ -36,7 +39,7 @@ model-viewer {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: white;
   transition: opacity .45s ease;
 }
 
@@ -52,69 +55,169 @@ model-viewer {
   display: block;
   transform-origin: 50% 85%;
   animation: idleWalk .48s ease-in-out infinite alternate;
-  user-select: none;
-  -webkit-user-drag: none;
 }
 
 .loading-text {
   margin-top: 8px;
   color: #999;
   font-size: 12px;
-  letter-spacing: .2px;
+  text-align: center;
+}
+
+.progress-track {
+  width: 130px;
+  height: 5px;
+  margin-top: 12px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background: #91bd78;
+  border-radius: 10px;
+  transition: width .2s ease;
+}
+
+#errorMessage {
+  display: none;
+  margin-top: 12px;
+  color: #bd7777;
+  font-size: 12px;
   text-align: center;
 }
 
 @keyframes idleWalk {
-  0%   { transform: translateY(0) rotate(-1.2deg) scale(1); }
-  50%  { transform: translateY(-5px) rotate(0deg) scale(1.015); }
-  100% { transform: translateY(0) rotate(1.2deg) scale(1); }
+  0% {
+    transform: translateY(0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(0) rotate(1.2deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dino { animation: none; }
+  .dino {
+    animation: none;
+  }
 }
 </style>
 </head>
 
 <body>
+
+<!-- LOADING SCREEN -->
 <div id="loading">
-  <img class="dino" src="./dino-loading.png"
-       alt="Maskot T-Rex JURASSIA">
+
+  <img
+    class="dino"
+    src="./dino-loading.png"
+    alt="T-Rex JURASSIA"
+  >
+
   <div class="loading-text" id="loadingText">
-    Menyiapkan petualangan JURASSIA...
+    Menyiapkan petualangan JURASSIA... 0%
   </div>
+
+  <div class="progress-track">
+    <div id="progressBar"></div>
+  </div>
+
+  <div id="errorMessage">
+    Periksa koneksi atau file model 3D.
+  </div>
+
 </div>
 
+<!-- 3D MODEL VIEWER -->
 <model-viewer
+  id="dinoViewer"
   src="./archaeopteryx.glb"
   alt="Model 3D Archaeopteryx"
+
   camera-controls
   auto-rotate
   auto-rotate-delay="1000"
   rotation-per-second="18deg"
+
   interaction-prompt="none"
   shadow-intensity="1"
   exposure="1"
   environment-image="neutral"
+
   loading="eager"
+
   ar
-  ar-modes="scene-viewer webxr"
-  ar-scale="auto">
+  ar-modes="scene-viewer"
+  ar-scale="auto"
+  ar-placement="floor"
+>
 </model-viewer>
 
 <script>
-const viewer = document.querySelector("model-viewer");
+const viewer = document.getElementById("dinoViewer");
 const loading = document.getElementById("loading");
 const loadingText = document.getElementById("loadingText");
+const progressBar = document.getElementById("progressBar");
+const errorMessage = document.getElementById("errorMessage");
 
-viewer.addEventListener("load", () => {
-  loading.classList.add("hide");
-  setTimeout(() => loading.remove(), 500);
+let modelLoaded = false;
+
+// PROGRESS LOADING
+viewer.addEventListener("progress", (event) => {
+  const percent = Math.round(
+    event.detail.totalProgress * 100
+  );
+
+  loadingText.textContent =
+    `Menyiapkan petualangan JURASSIA... ${percent}%`;
+
+  progressBar.style.width = percent + "%";
 });
 
+// MODEL BERHASIL DIMUAT
+viewer.addEventListener("load", () => {
+  modelLoaded = true;
+
+  loadingText.textContent = "Petualangan dimulai!";
+  progressBar.style.width = "100%";
+
+  setTimeout(() => {
+    loading.classList.add("hide");
+
+    setTimeout(() => {
+      loading.remove();
+    }, 500);
+
+  }, 200);
+});
+
+// MODEL GAGAL DIMUAT
 viewer.addEventListener("error", () => {
-  loadingText.textContent = "Model belum berhasil dimuat :(";
+  loadingText.textContent = "Yah, modelnya gagal dimuat :(";
+  errorMessage.style.display = "block";
+});
+
+// AR GAGAL DIBUKA
+viewer.addEventListener("ar-status", (event) => {
+  if (event.detail.status === "failed") {
+    console.warn("AR gagal dibuka.");
+
+    // Jangan tutup loading atau halaman viewer.
+    // Pengguna tetap bisa melihat model 3D.
+  }
+});
+
+// CEK FILE GAMBAR LOADING
+document.querySelector(".dino").addEventListener("error", () => {
+  console.error("Gambar dino-loading.png tidak ditemukan.");
 });
 </script>
+
 </body>
 </html>
